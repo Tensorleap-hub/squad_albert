@@ -85,7 +85,7 @@ context is: “he never graduated from the university” (shown in orange). This
 However, the ground truth’s indexes refer to “no” (shown in green) in the sentence: “no Sundays or holidays…”. As in 
 the above example, the indexes are incorrect and in an unrelated location to the question.
 
-![False / Ambiguous Labelings](images/Ambiguous Labelings.png)
+![False / Ambiguous Labelings](images/Ambiguous_Labelings.png)
 
 Such cases distort the model’s performance and negatively affect its fitting when penalizing the model on these samples.
 We can solve these issues by changing the ground truth or by removing such samples.
