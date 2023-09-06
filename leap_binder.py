@@ -289,3 +289,6 @@ leap_binder.set_visualizer(tokens_question_decoder_leap, 'tokens_question_decode
 leap_binder.set_visualizer(tokens_context_decoder_leap, 'tokens_context_decoder', LeapDataType.Text)
 leap_binder.set_visualizer(segmented_tokens_decoder_leap, 'segmented_tokens_decoder', LeapDataType.TextMask)
 
+
+if __name__ == '__main__':
+    leap_binder.check()
