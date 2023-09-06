@@ -1,0 +1,316 @@
+decorators:
+  - operation: Input
+    data:
+      type: Input
+      output_name: input_ids
+    id: '410'
+    inputs: {}
+    outputs:
+      input_ids:
+        - inputKey: input
+          operation: Embedding
+          name: tf_albert_for_question_answering/albert/embeddings/Gather_0
+          id: '409'
+        - inputKey: input_ids
+          operation: Visualizer
+          id: '918'
+        - inputKey: input_ids
+          operation: Visualizer
+          id: '919'
+        - inputKey: input_ids
+          operation: Visualizer
+          id: '920'
+        - inputKey: input_ids
+          operation: Visualizer
+          id: '921'
+        - inputKey: input_ids
+          operation: Visualizer
+          id: '923'
+        - inputKey: input_ids
+          operation: Visualizer
+          id: '925'
+  - operation: Input
+    data:
+      type: Input
+      output_name: token_type_ids
+    id: '412'
+    inputs: {}
+    outputs:
+      token_type_ids:
+        - inputKey: input
+          operation: Embedding
+          name: tf_albert_for_question_answering/albert/embeddings/Gather_2_0
+          id: '411'
+        - inputKey: token_type_ids
+          operation: Visualizer
+          id: '918'
+        - inputKey: token_type_ids
+          operation: Visualizer
+          id: '919'
+        - inputKey: token_type_ids
+          operation: Visualizer
+          id: '921'
+        - inputKey: token_type_ids
+          operation: Visualizer
+          id: '923'
+        - inputKey: token_type_ids
+          operation: Visualizer
+          id: '925'
+  - operation: Input
+    data:
+      type: Input
+      output_name: attention_mask
+    id: '438'
+    inputs: {}
+    outputs:
+      attention_mask:
+        - inputKey: '0'
+          operation: TFOpLambda
+          name: tf.identity_1
+          id: '437'
+  - operation: CustomLoss
+    data:
+      arg_names:
+        - ground_truth
+        - prediction
+      name: qa_cross_entropy
+      selected: qa_cross_entropy
+      type: CustomLoss
+    id: '914'
+    inputs:
+      prediction:
+        - outputKey: merged
+          operation: TFOpLambda
+          name: tf.__operators__.add_112
+          id: '1'
+      ground_truth:
+        - outputKey: indices_gt
+          operation: GroundTruth
+          id: '915'
+    outputs:
+      loss:
+        - inputKey: '0'
+          operation: Adam
+          id: '916'
+  - operation: GroundTruth
+    data:
+      type: GroundTruth
+      output_name: indices_gt
+      selected: indices_gt
+    id: '915'
+    inputs: {}
+    outputs:
+      indices_gt:
+        - inputKey: ground_truth
+          operation: Metric
+          id: '917'
+        - inputKey: gt_logits
+          operation: Visualizer
+          id: '923'
+        - inputKey: logits
+          operation: Visualizer
+          id: '925'
+        - inputKey: ground_truth
+          operation: CustomLoss
+          id: '914'
+  - operation: Adam
+    data:
+      type: Optimizer
+      custom_input_keys:
+        - 916-0
+    id: '916'
+    inputs:
+      '0':
+        - outputKey: loss
+          operation: CustomLoss
+          id: '914'
+    outputs: {}
+  - operation: Metric
+    data:
+      type: Metric
+      name: Accuracy
+      metric_name: Accuracy
+      arg_names:
+        - ground_truth
+        - prediction
+      user_unique_name: Accuracy
+    id: '917'
+    inputs:
+      prediction:
+        - outputKey: merged
+          operation: TFOpLambda
+          name: tf.__operators__.add_112
+          id: '1'
+      ground_truth:
+        - outputKey: indices_gt
+          operation: GroundTruth
+          id: '915'
+    outputs: {}
+  - operation: Visualizer
+    data:
+      type: Visualizer
+      name: tokens_question_decoder
+      visualizer_name: tokens_question_decoder
+      visualizer_type: Text
+      arg_names:
+        - input_ids
+        - token_type_ids
+      user_unique_name: tokens_question_decoder
+    id: '918'
+    inputs:
+      input_ids:
+        - outputKey: input_ids
+          operation: Input
+          id: '410'
+      token_type_ids:
+        - outputKey: token_type_ids
+          operation: Input
+          id: '412'
+    outputs: {}
+  - operation: Visualizer
+    data:
+      type: Visualizer
+      name: tokens_context_decoder
+      visualizer_name: tokens_context_decoder
+      visualizer_type: Text
+      arg_names:
+        - input_ids
+        - token_type_ids
+      user_unique_name: tokens_context_decoder
+    id: '919'
+    inputs:
+      input_ids:
+        - outputKey: input_ids
+          operation: Input
+          id: '410'
+      token_type_ids:
+        - outputKey: token_type_ids
+          operation: Input
+          id: '412'
+    outputs: {}
+  - operation: Visualizer
+    data:
+      type: Visualizer
+      name: tokens_decoder
+      visualizer_name: tokens_decoder
+      visualizer_type: Text
+      arg_names:
+        - input_ids
+      user_unique_name: tokens_decoder
+    id: '920'
+    inputs:
+      input_ids:
+        - outputKey: input_ids
+          operation: Input
+          id: '410'
+    outputs: {}
+  - operation: Visualizer
+    data:
+      type: Visualizer
+      name: new_answer_decoder
+      visualizer_name: new_answer_decoder
+      visualizer_type: Text
+      arg_names:
+        - logits
+        - input_ids
+        - token_type_ids
+        - offset_mapping
+      user_unique_name: new_answer_decoder_predict
+    id: '921'
+    inputs:
+      logits:
+        - outputKey: merged
+          operation: TFOpLambda
+          name: tf.__operators__.add_112
+          id: '1'
+      input_ids:
+        - outputKey: input_ids
+          operation: Input
+          id: '410'
+      token_type_ids:
+        - outputKey: token_type_ids
+          operation: Input
+          id: '412'
+      offset_mapping:
+        - outputKey: offset_mapping
+          operation: Input
+          id: '922'
+    outputs: {}
+  - operation: Input
+    data:
+      type: Input
+      output_name: offset_mapping
+    id: '922'
+    inputs: {}
+    outputs:
+      offset_mapping:
+        - inputKey: offset_mapping
+          operation: Visualizer
+          id: '921'
+        - inputKey: offset_mapping
+          operation: Visualizer
+          id: '925'
+  - operation: Visualizer
+    data:
+      type: Visualizer
+      name: segmented_tokens_decoder
+      visualizer_name: segmented_tokens_decoder
+      visualizer_type: TextMask
+      arg_names:
+        - input_ids
+        - token_type_ids
+        - gt_logits
+        - pred_logits
+      user_unique_name: segmented_tokens_decoder_gt
+    id: '923'
+    inputs:
+      pred_logits:
+        - outputKey: merged
+          operation: TFOpLambda
+          name: tf.__operators__.add_112
+          id: '1'
+      input_ids:
+        - outputKey: input_ids
+          operation: Input
+          id: '410'
+      token_type_ids:
+        - outputKey: token_type_ids
+          operation: Input
+          id: '412'
+      gt_logits:
+        - outputKey: indices_gt
+          operation: GroundTruth
+          id: '915'
+    outputs: {}
+  - operation: Visualizer
+    data:
+      type: Visualizer
+      name: new_answer_decoder
+      visualizer_name: new_answer_decoder
+      visualizer_type: Text
+      arg_names:
+        - logits
+        - input_ids
+        - token_type_ids
+        - offset_mapping
+      user_unique_name: new_answer_decoder_gt
+    id: '925'
+    inputs:
+      input_ids:
+        - outputKey: input_ids
+          operation: Input
+          id: '410'
+      token_type_ids:
+        - outputKey: token_type_ids
+          operation: Input
+          id: '412'
+      offset_mapping:
+        - outputKey: offset_mapping
+          operation: Input
+          id: '922'
+      logits:
+        - outputKey: indices_gt
+          operation: GroundTruth
+          id: '915'
+    outputs: {}
+layers: []
