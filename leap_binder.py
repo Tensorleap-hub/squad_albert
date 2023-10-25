@@ -17,7 +17,7 @@ from squad_albert.decoders import get_decoded_tokens, tokenizer_decoder, context
     answer_decoder, tokens_decoder, tokens_question_decoder, tokens_context_decoder, segmented_tokens_decoder
 from squad_albert.encoders import gt_index_encoder, gt_end_index_encoder, gt_start_index_encoder
 from squad_albert.loss import CE_loss
-from squad_albert.metrics import get_start_end_arrays, exact_match_metric, f1_metric, CE_start_index, CE_end_index
+from squad_albert.metrics import get_start_end_arrays, exact_match_metric, f1_metric, CE_index
 from squad_albert.utils.utils import get_context_positions, get_readibility_score
 
 
@@ -277,8 +277,7 @@ for stat in ['num_letters', 'num_words', 'num_sentences', 'num_polysyllabic_word
 leap_binder.add_custom_loss(CE_loss, 'qa_cross_entropy')
 leap_binder.add_custom_metric(exact_match_metric, "exact_match_metric")
 leap_binder.add_custom_metric(f1_metric, "f1_metric")
-leap_binder.add_custom_metric(CE_start_index, "CE_start_index")
-leap_binder.add_custom_metric(CE_end_index, "CE_end_index")
+leap_binder.add_custom_metric(CE_index, "CE_index")
 
 # ------- Visualizers  ---------
 leap_binder.set_visualizer(answer_decoder_leap, 'new_answer_decoder', LeapDataType.Text)

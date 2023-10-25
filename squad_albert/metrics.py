@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 import tensorflow as tf
 import numpy as np
 
@@ -64,7 +64,7 @@ def f1_metric(y_true: tf.Tensor, y_pred: tf.Tensor) -> tf.Tensor:  # return batc
                   tf.zeros_like(recall, dtype=tf.float64))
     return f1
 
-def CE_start_index(ground_truth: tf.Tensor, prediction: tf.Tensor) -> tf.Tensor:
+def CE_index(ground_truth: tf.Tensor, prediction: tf.Tensor) -> Dict[str, tf.Tensor]:
     """
     Description: Computes the Categorical Cross-Entropy loss for the start index predictions.
     Parameters:
@@ -76,18 +76,5 @@ def CE_start_index(ground_truth: tf.Tensor, prediction: tf.Tensor) -> tf.Tensor:
     loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True, reduction=tf.keras.losses.Reduction.NONE)
     start_gt, end_gt = get_start_end_arrays(ground_truth)
     start_pred, end_pred = get_start_end_arrays(prediction)
-    return loss(start_gt, start_pred)
-
-def CE_end_index(ground_truth: tf.Tensor, prediction: tf.Tensor) -> tf.Tensor:
-    """
-    Description: Computes the Categorical Cross-Entropy loss for the end index predictions.
-    Parameters:
-    ground_truth (tf.Tensor): Ground truth tensor of shape [B, max_sequence_length, 2].
-    prediction (tf.Tensor): Predicted tensor of shape [B, max_sequence_length, 2].
-    Returns:
-    loss (tf.Tensor): Categorical Cross-Entropy loss for the end index predictions.
-    """
-    loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True, reduction=tf.keras.losses.Reduction.NONE)
-    start_gt, end_gt = get_start_end_arrays(ground_truth)
-    start_pred, end_pred = get_start_end_arrays(prediction)
-    return loss(end_gt, end_pred)
+    metric_dict = {"start": loss(start_gt, start_pred), "end": loss(end_gt, end_pred)}
+    return metric_dict
