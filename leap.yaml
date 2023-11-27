@@ -1,9 +1,10 @@
-codeIntegrationId: 64a280cfddeecd001906cdc2
-projectId: ""
-secretManagerId: ""
+codeIntegrationId: 65648e8f3921f60012723605
+projectId: 65648e713921f60012723601
+secretId: ""
 entryFile: leap_binder.py
 include:
     - leap_binder.py
+    - leap_custom_test.py
     - squad_albert/data/preprocess.py
     - squad_albert/utils/utils.py
     - squad_albert/config.py
@@ -12,4 +13,3 @@ include:
     - squad_albert/loss.py
     - squad_albert/metrics.py
     - squad_albert/project_config.yaml
-
