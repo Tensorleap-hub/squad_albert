@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 import tensorflow as tf
 import numpy as np
 
@@ -40,7 +40,7 @@ def get_nonnegative_tensor(tensor: tf.Tensor) -> tf.Tensor:
     return tf.where(tensor > 0, tensor, tf.zeros_like(tensor))
 
 
-def f1_metric(y_true: tf.Tensor, y_pred: tf.Tensor) -> tf.Tensor:  # return batch
+def dict_metrics(y_true: tf.Tensor, y_pred: tf.Tensor) -> Dict[str, tf.Tensor]:  # return batch
     """
     Description: Computes the F1 metric (2*precision*recall)/(precision + recall)
     Parameters:
@@ -49,10 +49,11 @@ def f1_metric(y_true: tf.Tensor, y_pred: tf.Tensor) -> tf.Tensor:  # return batc
     Returns:
     f1 (tf.Tensor): F1 scores for each sequence in the batch, with shape [B].
     """
+    res = dict()
     start_pred, end_pred = tf.transpose(tf.argmax(y_pred, axis=1))
-    end_pred += 1  # fix end bondary encoding
+    end_pred += 1
     start_true, end_true = tf.transpose(tf.argmax(y_true, axis=1))
-    end_true += 1  # fix end bondary encoding
+    end_true += 1
     number_of_matches = tf.minimum(end_pred, end_true) - tf.maximum(start_pred, start_true)
     number_of_matches = get_nonnegative_tensor(number_of_matches)
     amount_predicted = get_nonnegative_tensor(end_pred - start_pred)
@@ -62,7 +63,9 @@ def f1_metric(y_true: tf.Tensor, y_pred: tf.Tensor) -> tf.Tensor:  # return batc
     recall = tf.where(amount_truth > 0, number_of_matches / amount_truth, tf.zeros_like(amount_truth, dtype=tf.float64))
     f1 = tf.where(precision + recall > 0, 2 * precision * recall / (precision + recall),
                   tf.zeros_like(recall, dtype=tf.float64))
-    return f1
+    res["f1"] = f1
+    res["iou"] = number_of_matches/(tf.maximum(amount_predicted+amount_truth-number_of_matches, 1))
+    return res
 
 def CE_start_index(ground_truth: tf.Tensor, prediction: tf.Tensor) -> tf.Tensor:
     """
