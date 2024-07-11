@@ -15,6 +15,7 @@ textstat = "^0.7.3"
 py-readability-metrics = "^1.4.5"
 sentencepiece = "^0.1.99"
 
+datasets = "^2.20.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
