@@ -4,6 +4,9 @@ import nltk
 import tensorflow as tf
 
 from squad_albert.config import CONFIG
+import subprocess
+import sys
+
 
 nltk.download('punkt')
 np.random.seed(0)
@@ -92,8 +95,21 @@ def get_readibility_score(analyzer_func) -> float:
 
 
 
+def install(package, version=None):
+    if version:
+        package_with_version = f"{package}=={version}"
+    else:
+        package_with_version = package
+    subprocess.check_call(
+        [sys.executable, "-m", "pip", "install", package_with_version]
+    )
 
-
+def install_all_packages():
+    if CONFIG["packages"]:
+        for package_info in CONFIG["packages"]:
+            package_name = package_info["name"]
+            version = package_info.get("version")  # Check if version is specified
+            install(package_name, version)
 
 
 

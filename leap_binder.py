@@ -1,6 +1,9 @@
+from squad_albert.utils.utils import install_all_packages
+install_all_packages()
+
 import tensorflow as tf
 import numpy as np
-from readability import Readability
+import readability
 
 # Tensorleap imports
 from code_loader import leap_binder
@@ -17,18 +20,24 @@ from squad_albert.decoders import get_decoded_tokens, tokenizer_decoder, context
     answer_decoder, tokens_decoder, tokens_question_decoder, tokens_context_decoder, segmented_tokens_decoder
 from squad_albert.encoders import gt_index_encoder, gt_end_index_encoder, gt_start_index_encoder
 from squad_albert.loss import CE_loss
-from squad_albert.metrics import get_start_end_arrays, exact_match_metric, f1_metric, CE_start_index, CE_end_index
+from squad_albert.metrics import get_start_end_arrays, exact_match_metric, dict_metrics, CE_start_index, CE_end_index
 from squad_albert.utils.utils import get_context_positions, get_readibility_score
 
 
 # -------------------------load_data--------------------------------
-def preprocess_load_article_titles() -> List[PreprocessResponse]:
-    train_idx, train_ds, val_idx, val_ds, enums_dic = load_data()
+def preprocess_response() -> List[PreprocessResponse]:
+    train_idx, train_ds, val_idx, val_ds, _, _, enums_dic = load_data()
     train = PreprocessResponse(length=len(train_idx), data={'ds': train_ds, 'idx': train_idx, **enums_dic})
     test = PreprocessResponse(length=len(val_idx), data={'ds': val_ds, 'idx': val_idx, **enums_dic})
     tokenizer = AlbertTokenizerFast.from_pretrained("vumichien/albert-base-v2-squad2")
     leap_binder.cache_container["tokenizer"] = tokenizer
     return [train, test]
+
+
+def preprocess_response_unlabeled() -> List[PreprocessResponse]:
+    _, _, _, _, test_idx, test_ds, enums_dic = load_data()
+    test = PreprocessResponse(length=len(test_idx), data={'ds': test_ds, 'idx': test_idx, **enums_dic})
+    return test
 
 
 # ------- Inputs ---------
@@ -108,7 +117,13 @@ def metadata_length(idx: int, preprocess: PreprocessResponse) -> Dict[str, int]:
     return res
 
 def metadata_dict(idx: int, data: PreprocessResponse) -> Dict[str, Union[float, int, str]]:
+    res = metadata_length(idx, data)
     idx = convert_index(idx, data)
+    for section in ["context", "question"]:
+        stats_res = calc_txt_statistics(idx, data, section)
+        for key in ['readability grades', 'sentence info', 'word usage', 'sentence beginnings']:
+            key_stat = {f"{section}_{key}_{k}": v for k, v in stats_res[key].items()}
+            res.update(key_stat)
 
     metadata_functions = {
         "answer_length": metadata_answer_length,
@@ -118,10 +133,10 @@ def metadata_dict(idx: int, data: PreprocessResponse) -> Dict[str, Union[float, 
         "context_polarity": metadata_context_polarity,
         "context_subjectivity": metadata_context_subjectivity
     }
-
-    res = dict()
     for func_name, func in metadata_functions.items():
         res[func_name] = func(idx, data)
+
+    res.update(metadata_answer_relative(idx, data, res['context_length']))
     return res
 
 def get_decoded_tokens_leap(input_ids: np.ndarray)->List[str]:
@@ -134,6 +149,16 @@ def metadata_answer_length(idx: int, preprocess: PreprocessResponse) -> int:
     start_ind = np.argmax(gt_start_index_encoder_leap(idx, preprocess))
     end_ind = np.argmax(gt_end_index_encoder_leap(idx, preprocess))
     return int(end_ind - start_ind + 1)
+
+def metadata_answer_relative(idx: int, preprocess: PreprocessResponse, context_length: int) -> int:
+    res = {}
+    start_ind = np.argmax(gt_start_index_encoder_leap(idx, preprocess))
+    end_ind = np.argmax(gt_end_index_encoder_leap(idx, preprocess))
+    res["answer_length_relative"] = int(end_ind - start_ind + 1)/context_length
+    res["answer_start_relative"] = round(start_ind/context_length, 3)
+    res["answer_end_relative"] = round(end_ind/context_length, 3)
+    return res
+
 
 
 def metadata_title(idx: int, preprocess: PreprocessResponse) -> str:
@@ -167,23 +192,22 @@ def metadata_context_subjectivity(idx: int, preprocess: PreprocessResponse) -> f
     val = context_subjectivity(text)
     return val
 
+#
+# def get_analyzer(idx: int, preprocess: PreprocessResponse, section='context') -> Readability:
+#     idx = convert_index(idx, preprocess)
+#     text: str = preprocess.data['ds'][idx][section]
+#     try:
+#         analyzer = Readability(text)
+#     except:
+#         analyzer = None
+#     return analyzer
 
-def get_analyzer(idx: int, preprocess: PreprocessResponse, section='context') -> Readability:
-    idx = convert_index(idx, preprocess)
-    text: str = preprocess.data['ds'][idx][section]
-    try:
-        analyzer = Readability(text)
-    except:
-        analyzer = None
-    return analyzer
 
-
-def get_statistics(key: str, idx: int, subset: PreprocessResponse, section='context') -> float:
-    analyzer = get_analyzer(idx, subset, section)
-    if analyzer is not None:
-        return float(analyzer.statistics()[str(key)])
-    else:
-        return -1
+def calc_txt_statistics(idx: int, subset: PreprocessResponse, section='context') -> float:
+    # idx = convert_index(idx, subset)
+    text: str = subset.data['ds'][idx][section]
+    results = readability.getmeasures(text, lang='en')
+    return results
 
 
 # ------- Visualizers  ---------
@@ -226,7 +250,9 @@ def segmented_tokens_decoder_leap(input_ids: np.ndarray, token_type_ids: np.ndar
 
 # Dataset binding functions to bind the functions above to the `Dataset Instance`.
 
-leap_binder.set_preprocess(function=preprocess_load_article_titles)
+leap_binder.set_preprocess(function=preprocess_response)
+leap_binder.set_unlabeled_data_preprocess(function=preprocess_response_unlabeled)
+
 
 # ------- Inputs ---------
 """
@@ -249,34 +275,34 @@ leap_binder.set_metadata(function=metadata_length, name='metadata_length')
 leap_binder.set_metadata(function=metadata_is_truncated, name='is_truncated')
 
 
-readability_scores = [
-    ("ARI", "ari"),
-    ("Coleman Liau", "coleman_liau"),
-    ("Dale Chall", "dale_chall"),
-    ("Flesch Reading Ease", "flesch"),
-    ("Flesch-Kincaid Grade Level", "flesch_kincaid"),
-    ("Gunning Fog", "gunning_fog"),
-    ("Linsear Write", "linsear_write"),
-    ("SMOG Index", "smog"),
-    ("Spache Index", "spache")
-]
+# readability_scores = [
+#     ("ARI", "ari"),
+#     ("Coleman Liau", "coleman_liau"),
+#     ("Dale Chall", "dale_chall"),
+#     ("Flesch Reading Ease", "flesch"),
+#     ("Flesch-Kincaid Grade Level", "flesch_kincaid"),
+#     ("Gunning Fog", "gunning_fog"),
+#     ("Linsear Write", "linsear_write"),
+#     ("SMOG Index", "smog"),
+#     ("Spache Index", "spache")
+# ]
 
-for score_name, method_name in readability_scores:
-    leap_binder.set_metadata(
-        lambda idx, preprocess, method_name=method_name: get_readibility_score(get_analyzer(idx, preprocess).__getattribute__(method_name)),
-        name=f"context_{method_name.lower()}_score"
-    )
-
-# Statistics metadata
-for stat in ['num_letters', 'num_words', 'num_sentences', 'num_polysyllabic_words', 'avg_words_per_sentence',
-             'avg_syllables_per_word']:
-    leap_binder.set_metadata(lambda idx, preprocess, key=stat: get_statistics(key, idx, preprocess, 'context'),
-                             name=f'context_{stat}')
+# for score_name, method_name in readability_scores:
+#     leap_binder.set_metadata(
+#         lambda idx, preprocess, method_name: get_readibility_score(get_analyzer(idx, preprocess).__getattribute__(method_name)),
+#         name=f"context_{method_name.lower()}_score"
+#     )
+#
+# # Statistics metadata
+# for stat in ['num_letters', 'num_words', 'num_sentences', 'num_polysyllabic_words', 'avg_words_per_sentence',
+#              'avg_syllables_per_word']:
+#     leap_binder.set_metadata(lambda idx, preprocess, key=stat: calc_txt_statistics(key, idx, preprocess, 'context'),
+#                              name=f'context_{stat}')
 
 # ------- Loss and Metrics ---------
 leap_binder.add_custom_loss(CE_loss, 'qa_cross_entropy')
 leap_binder.add_custom_metric(exact_match_metric, "exact_match_metric")
-leap_binder.add_custom_metric(f1_metric, "f1_metric")
+leap_binder.add_custom_metric(dict_metrics, "metric")
 leap_binder.add_custom_metric(CE_start_index, "CE_start_index")
 leap_binder.add_custom_metric(CE_end_index, "CE_end_index")
 

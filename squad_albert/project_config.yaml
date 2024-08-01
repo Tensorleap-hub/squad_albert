@@ -1,17 +1,27 @@
 max_sequence_length: 384
 max_answer_length: 20
+k_titles: 3
 LABELS:
   - "start_idx"
   - "end_idx"
 PAD_TOKEN: ""
-TRAIN_SIZE: 1000
-VAL_SIZE: 1000
+TRAIN_SIZE: 4000
+VAL_SIZE: 2000
+TEST_SIZE: 2000
 CHANGE_INDEX_FLAG: true
 input_keys:
   - "input_ids"
   - "token_type_ids"
   - "attention_mask"
   - "offset_mapping"
+
+
+
+# Env
+# Packages to include
+packages:
+ - name: readability
+   version: 0.3.1
 
 
 

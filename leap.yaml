@@ -1,15 +1,14 @@
-codeIntegrationId: 64a280cfddeecd001906cdc2
+codeIntegrationId: 65648e8f3921f60012723605
 projectId: ""
-secretManagerId: ""
+secretId: 6603eda01a529730e6ccfc81
 entryFile: leap_binder.py
 include:
     - leap_binder.py
     - squad_albert/data/preprocess.py
-    - squad_albert/utils/utils.py
+    - squad_albert/utils/*.py
     - squad_albert/config.py
     - squad_albert/decoders.py
     - squad_albert/encoders.py
     - squad_albert/loss.py
     - squad_albert/metrics.py
     - squad_albert/project_config.yaml
-
