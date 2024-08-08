@@ -3,148 +3,147 @@ decorators:
     data:
       type: Input
       output_name: input_ids
-    id: '410'
+    id: '466'
     inputs: {}
     outputs:
       input_ids:
-        - inputKey: input
-          operation: Embedding
-          name: tf_albert_for_question_answering/albert/embeddings/Gather_0
-          id: '409'
+        - inputKey: '0'
+          operation: TFOpLambda
+          name: tf.identity_2
+          id: '465'
         - inputKey: input_ids
           operation: Visualizer
-          id: '918'
+          id: '1871'
         - inputKey: input_ids
           operation: Visualizer
-          id: '919'
+          id: '1874'
         - inputKey: input_ids
           operation: Visualizer
-          id: '920'
+          id: '1872'
         - inputKey: input_ids
           operation: Visualizer
-          id: '921'
+          id: '1873'
         - inputKey: input_ids
           operation: Visualizer
-          id: '923'
-        - inputKey: input_ids
-          operation: Visualizer
-          id: '925'
+          id: '1880'
   - operation: Input
     data:
       type: Input
       output_name: token_type_ids
-    id: '412'
+    id: '475'
     inputs: {}
     outputs:
       token_type_ids:
         - inputKey: input
           operation: Embedding
-          name: tf_albert_for_question_answering/albert/embeddings/Gather_2_0
-          id: '411'
+          name: >-
+            tf_albert_for_question_answering/albert/embeddings/Gather_2_tl_gather_emb
+          id: '474'
         - inputKey: token_type_ids
           operation: Visualizer
-          id: '918'
+          id: '1872'
         - inputKey: token_type_ids
           operation: Visualizer
-          id: '919'
+          id: '1874'
         - inputKey: token_type_ids
           operation: Visualizer
-          id: '921'
+          id: '1873'
         - inputKey: token_type_ids
           operation: Visualizer
-          id: '923'
-        - inputKey: token_type_ids
-          operation: Visualizer
-          id: '925'
+          id: '1880'
   - operation: Input
     data:
       type: Input
       output_name: attention_mask
-    id: '438'
+    id: '538'
     inputs: {}
     outputs:
       attention_mask:
         - inputKey: '0'
           operation: TFOpLambda
-          name: tf.identity_1
-          id: '437'
-  - operation: CustomLoss
-    data:
-      arg_names:
-        - ground_truth
-        - prediction
-      name: qa_cross_entropy
-      selected: qa_cross_entropy
-      type: CustomLoss
-    id: '914'
-    inputs:
-      prediction:
-        - outputKey: merged
-          operation: TFOpLambda
-          name: tf.__operators__.add_112
-          id: '1'
-      ground_truth:
-        - outputKey: indices_gt
-          operation: GroundTruth
-          id: '915'
-    outputs:
-      loss:
-        - inputKey: '0'
-          operation: Adam
-          id: '916'
+          name: tf.identity_3
+          id: '537'
   - operation: GroundTruth
     data:
       type: GroundTruth
       output_name: indices_gt
       selected: indices_gt
-    id: '915'
+    id: '1868'
     inputs: {}
     outputs:
       indices_gt:
         - inputKey: ground_truth
-          operation: Metric
-          id: '917'
+          operation: CustomLoss
+          id: '1869'
         - inputKey: gt_logits
           operation: Visualizer
-          id: '923'
-        - inputKey: logits
-          operation: Visualizer
-          id: '925'
+          id: '1874'
+        - inputKey: y_true
+          operation: Metric
+          id: '1878'
         - inputKey: ground_truth
-          operation: CustomLoss
-          id: '914'
-  - operation: Adam
+          operation: Metric
+          id: '1877'
+        - inputKey: ground_truth
+          operation: Metric
+          id: '1875'
+        - inputKey: y_true
+          operation: Metric
+          id: '1876'
+        - inputKey: ground_truth
+          operation: Metric
+          id: '1879'
+  - operation: CustomLoss
     data:
-      type: Optimizer
-      custom_input_keys:
-        - 916-0
-    id: '916'
-    inputs:
-      '0':
-        - outputKey: loss
-          operation: CustomLoss
-          id: '914'
-    outputs: {}
-  - operation: Metric
-    data:
-      type: Metric
-      name: Accuracy
-      metric_name: Accuracy
+      type: CustomLoss
       arg_names:
         - ground_truth
         - prediction
-      user_unique_name: Accuracy
-    id: '917'
+      output_name: qa_cross_entropy
+      selected: qa_cross_entropy
+    id: '1869'
     inputs:
       prediction:
         - outputKey: merged
-          operation: TFOpLambda
-          name: tf.__operators__.add_112
+          operation: Concatenate
+          name: concatenate_7
           id: '1'
       ground_truth:
         - outputKey: indices_gt
           operation: GroundTruth
-          id: '915'
+          id: '1868'
+    outputs:
+      loss:
+        - inputKey: '0'
+          operation: Adam
+          id: '1870'
+  - operation: Adam
+    data:
+      type: Optimizer
+      custom_input_keys:
+        - 1870-0
+    id: '1870'
+    inputs:
+      '0':
+        - outputKey: loss
+          operation: CustomLoss
+          id: '1869'
+    outputs: {}
+  - operation: Visualizer
+    data:
+      type: Visualizer
+      name: tokens_decoder
+      visualizer_name: tokens_decoder
+      visualizer_type: Text
+      arg_names:
+        - input_ids
+      user_unique_name: tokens_decoder
+    id: '1871'
+    inputs:
+      input_ids:
+        - outputKey: input_ids
+          operation: Input
+          id: '466'
     outputs: {}
   - operation: Visualizer
     data:
@@ -156,16 +155,16 @@ decorators:
         - input_ids
         - token_type_ids
       user_unique_name: tokens_question_decoder
-    id: '918'
+    id: '1872'
     inputs:
       input_ids:
         - outputKey: input_ids
           operation: Input
-          id: '410'
+          id: '466'
       token_type_ids:
         - outputKey: token_type_ids
           operation: Input
-          id: '412'
+          id: '475'
     outputs: {}
   - operation: Visualizer
     data:
@@ -177,79 +176,17 @@ decorators:
         - input_ids
         - token_type_ids
       user_unique_name: tokens_context_decoder
-    id: '919'
+    id: '1873'
     inputs:
       input_ids:
         - outputKey: input_ids
           operation: Input
-          id: '410'
+          id: '466'
       token_type_ids:
         - outputKey: token_type_ids
           operation: Input
-          id: '412'
+          id: '475'
     outputs: {}
-  - operation: Visualizer
-    data:
-      type: Visualizer
-      name: tokens_decoder
-      visualizer_name: tokens_decoder
-      visualizer_type: Text
-      arg_names:
-        - input_ids
-      user_unique_name: tokens_decoder
-    id: '920'
-    inputs:
-      input_ids:
-        - outputKey: input_ids
-          operation: Input
-          id: '410'
-    outputs: {}
-  - operation: Visualizer
-    data:
-      type: Visualizer
-      name: new_answer_decoder
-      visualizer_name: new_answer_decoder
-      visualizer_type: Text
-      arg_names:
-        - logits
-        - input_ids
-        - token_type_ids
-        - offset_mapping
-      user_unique_name: new_answer_decoder_predict
-    id: '921'
-    inputs:
-      logits:
-        - outputKey: merged
-          operation: TFOpLambda
-          name: tf.__operators__.add_112
-          id: '1'
-      input_ids:
-        - outputKey: input_ids
-          operation: Input
-          id: '410'
-      token_type_ids:
-        - outputKey: token_type_ids
-          operation: Input
-          id: '412'
-      offset_mapping:
-        - outputKey: offset_mapping
-          operation: Input
-          id: '922'
-    outputs: {}
-  - operation: Input
-    data:
-      type: Input
-      output_name: offset_mapping
-    id: '922'
-    inputs: {}
-    outputs:
-      offset_mapping:
-        - inputKey: offset_mapping
-          operation: Visualizer
-          id: '921'
-        - inputKey: offset_mapping
-          operation: Visualizer
-          id: '925'
   - operation: Visualizer
     data:
       type: Visualizer
@@ -261,26 +198,131 @@ decorators:
         - token_type_ids
         - gt_logits
         - pred_logits
-      user_unique_name: segmented_tokens_decoder_gt
-    id: '923'
+      user_unique_name: segmented_tokens_decoder
+    id: '1874'
     inputs:
       pred_logits:
         - outputKey: merged
-          operation: TFOpLambda
-          name: tf.__operators__.add_112
+          operation: Concatenate
+          name: concatenate_7
           id: '1'
       input_ids:
         - outputKey: input_ids
           operation: Input
-          id: '410'
+          id: '466'
       token_type_ids:
         - outputKey: token_type_ids
           operation: Input
-          id: '412'
+          id: '475'
       gt_logits:
         - outputKey: indices_gt
           operation: GroundTruth
-          id: '915'
+          id: '1868'
+    outputs: {}
+  - operation: Metric
+    data:
+      type: Metric
+      name: CE_start_index
+      metric_name: CE_start_index
+      arg_names:
+        - ground_truth
+        - prediction
+      user_unique_name: CE_start_index
+    id: '1875'
+    inputs:
+      prediction:
+        - outputKey: merged
+          operation: Concatenate
+          name: concatenate_7
+          id: '1'
+      ground_truth:
+        - outputKey: indices_gt
+          operation: GroundTruth
+          id: '1868'
+    outputs: {}
+  - operation: Metric
+    data:
+      type: Metric
+      name: exact_match_metric
+      metric_name: exact_match_metric
+      arg_names:
+        - y_true
+        - y_pred
+      user_unique_name: exact_match_metric
+    id: '1876'
+    inputs:
+      y_pred:
+        - outputKey: merged
+          operation: Concatenate
+          name: concatenate_7
+          id: '1'
+      y_true:
+        - outputKey: indices_gt
+          operation: GroundTruth
+          id: '1868'
+    outputs: {}
+  - operation: Metric
+    data:
+      type: Metric
+      name: CE_end_index
+      metric_name: CE_end_index
+      arg_names:
+        - ground_truth
+        - prediction
+      user_unique_name: CE_end_index
+    id: '1877'
+    inputs:
+      prediction:
+        - outputKey: merged
+          operation: Concatenate
+          name: concatenate_7
+          id: '1'
+      ground_truth:
+        - outputKey: indices_gt
+          operation: GroundTruth
+          id: '1868'
+    outputs: {}
+  - operation: Metric
+    data:
+      type: Metric
+      name: metric
+      metric_name: metric
+      arg_names:
+        - y_true
+        - y_pred
+      user_unique_name: metric
+    id: '1878'
+    inputs:
+      y_pred:
+        - outputKey: merged
+          operation: Concatenate
+          name: concatenate_7
+          id: '1'
+      y_true:
+        - outputKey: indices_gt
+          operation: GroundTruth
+          id: '1868'
+    outputs: {}
+  - operation: Metric
+    data:
+      type: Metric
+      name: Accuracy
+      metric_name: Accuracy
+      arg_names:
+        - ground_truth
+        - prediction
+      user_unique_name: Accuracy
+    id: '1879'
+    inputs:
+      prediction:
+        - outputKey: merged
+          operation: Concatenate
+          name: concatenate_7
+          id: '1'
+      ground_truth:
+        - outputKey: indices_gt
+          operation: GroundTruth
+          id: '1868'
     outputs: {}
   - operation: Visualizer
     data:
@@ -293,24 +335,36 @@ decorators:
         - input_ids
         - token_type_ids
         - offset_mapping
-      user_unique_name: new_answer_decoder_gt
-    id: '925'
+      user_unique_name: new_answer_decoder
+    id: '1880'
     inputs:
+      logits:
+        - outputKey: merged
+          operation: Concatenate
+          name: concatenate_7
+          id: '1'
       input_ids:
         - outputKey: input_ids
           operation: Input
-          id: '410'
+          id: '466'
       token_type_ids:
         - outputKey: token_type_ids
           operation: Input
-          id: '412'
+          id: '475'
       offset_mapping:
         - outputKey: offset_mapping
           operation: Input
-          id: '922'
-      logits:
-        - outputKey: indices_gt
-          operation: GroundTruth
-          id: '915'
+          id: '1881'
     outputs: {}
+  - operation: Input
+    data:
+      type: Input
+      output_name: offset_mapping
+    id: '1881'
+    inputs: {}
+    outputs:
+      offset_mapping:
+        - inputKey: offset_mapping
+          operation: Visualizer
+          id: '1880'
 layers: []
