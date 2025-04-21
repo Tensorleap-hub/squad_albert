@@ -212,6 +212,8 @@ def calc_txt_statistics(idx: int, subset: PreprocessResponse, section='context')
 
 # ------- Visualizers  ---------
 def answer_decoder_leap(logits: tf.Tensor, input_ids: np.ndarray, token_type_ids, offset_mapping) -> LeapText:
+    logits = np.squeeze(logits)
+    input_ids = np.squeeze(input_ids)
     tokenizer = get_tokenizer()
     answer = answer_decoder(logits, input_ids, tokenizer)
     return LeapText(answer)
@@ -225,24 +227,33 @@ def onehot_to_indices(one_hot: np.ndarray) -> LeapText:
 
 
 def tokens_decoder_leap(input_ids: np.ndarray) -> LeapText:
+    input_ids = np.squeeze(input_ids)
     decoded = get_decoded_tokens_leap(input_ids)
     decoded = tokens_decoder(decoded)
     return LeapText(decoded)
 
 
 def tokens_question_decoder_leap(input_ids: np.ndarray, token_type_ids: np.ndarray) -> LeapText:
+    input_ids = np.squeeze(input_ids)
+    token_type_ids = np.squeeze(token_type_ids)
     tokenizer = get_tokenizer()
     decoded = tokens_question_decoder(input_ids, token_type_ids, tokenizer)
     return LeapText(decoded)
 
 
 def tokens_context_decoder_leap(input_ids: np.ndarray, token_type_ids: np.ndarray) -> LeapText:
+    input_ids = np.squeeze(input_ids)
+    token_type_ids = np.squeeze(token_type_ids)
     tokenizer = get_tokenizer()
     decoded = tokens_context_decoder(input_ids, token_type_ids, tokenizer)
     return LeapText(decoded)
 
 
 def segmented_tokens_decoder_leap(input_ids: np.ndarray, token_type_ids: np.ndarray, gt_logits: np.ndarray, pred_logits: np.ndarray) -> LeapTextMask:
+    input_ids = np.squeeze(input_ids)
+    token_type_ids = np.squeeze(token_type_ids)
+    gt_logits = np.squeeze(gt_logits)
+    pred_logits = np.squeeze(pred_logits)
     tokenizer = get_tokenizer()
     mask, text, labels = segmented_tokens_decoder(input_ids, token_type_ids, gt_logits, pred_logits, tokenizer)
     return LeapTextMask(mask.astype(np.uint8), text, labels)
@@ -286,7 +297,7 @@ leap_binder.set_metadata(function=metadata_is_truncated, name='is_truncated')
 #     ("SMOG Index", "smog"),
 #     ("Spache Index", "spache")
 # ]
-
+#
 # for score_name, method_name in readability_scores:
 #     leap_binder.set_metadata(
 #         lambda idx, preprocess, method_name: get_readibility_score(get_analyzer(idx, preprocess).__getattribute__(method_name)),
@@ -315,6 +326,3 @@ leap_binder.set_visualizer(tokens_question_decoder_leap, 'tokens_question_decode
 leap_binder.set_visualizer(tokens_context_decoder_leap, 'tokens_context_decoder', LeapDataType.Text)
 leap_binder.set_visualizer(segmented_tokens_decoder_leap, 'segmented_tokens_decoder', LeapDataType.TextMask)
 
-
-if __name__ == '__main__':
-    leap_binder.check()
