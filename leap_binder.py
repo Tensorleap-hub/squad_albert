@@ -1,6 +1,3 @@
-from squad_albert.utils.utils import install_all_packages
-install_all_packages()
-
 import tensorflow as tf
 import numpy as np
 import readability
