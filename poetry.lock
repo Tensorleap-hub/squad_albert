@@ -362,32 +362,33 @@ importlib-resources = ">=5"
 
 [[package]]
 name = "code-loader"
-version = "1.0.79"
+version = "1.0.127"
 description = ""
 optional = false
-python-versions = "<3.12,>=3.8"
+python-versions = "<3.13,>=3.8"
 groups = ["main"]
 files = [
-    {file = "code_loader-1.0.79-py3-none-any.whl", hash = "sha256:472d3bb341bb8e2cd15ab3655c5f6b764df43db0d362dc4c8bb17379443802ea"},
-    {file = "code_loader-1.0.79.tar.gz", hash = "sha256:843abedc6eec086e60f689053fa92f35ae1c320ff814413d580c9075e9d97887"},
+    {file = "code_loader-1.0.127-py3-none-any.whl", hash = "sha256:014d47639b76c3901624e433c9c5a250574fd8b8a7c7c5a4872271313e54e4c4"},
+    {file = "code_loader-1.0.127.tar.gz", hash = "sha256:e4f9f900ecf08372fd521b399c1a5763aca8c36f91390ef4b10d481fc4181b18"},
 ]
 
 [package.dependencies]
-numpy = ">=1.22.3,<2.0.0"
+mixpanel = ">=4.10.0,<5.0.0"
+numpy = {version = ">=1.22.3,<2.0.0", markers = "python_version >= \"3.8\" and python_version < \"3.11\""}
 psutil = ">=5.9.5,<6.0.0"
 pyyaml = ">=6.0.2,<7.0.0"
 requests = ">=2.32.3,<3.0.0"
 
 [[package]]
 name = "code-loader-helpers"
-version = "1.0.20"
+version = "1.0.21"
 description = ""
 optional = false
 python-versions = "<3.11,>=3.8"
 groups = ["main"]
 files = [
-    {file = "code_loader_helpers-1.0.20-py3-none-any.whl", hash = "sha256:86be20c198e661ed742fa8246d5d87dfbc1c82b96f9d7a9ddccb9dc4e22aa639"},
-    {file = "code_loader_helpers-1.0.20.tar.gz", hash = "sha256:a39fe1cc0858e8fb19df3f8b4ff5be075db0f0c8a7429c24b8a09970d75f82c6"},
+    {file = "code_loader_helpers-1.0.21-py3-none-any.whl", hash = "sha256:3435fb4ac3835216484903a04f1551731a68533042e74b41a60cacd2cb86ae7b"},
+    {file = "code_loader_helpers-1.0.21.tar.gz", hash = "sha256:7f7d776f2e70ecbbb8774fb05a9d89135ea569481b418ce62c5d9116a9adbbe8"},
 ]
 
 [package.dependencies]
@@ -396,7 +397,7 @@ matplotlib = ">=3.3.4"
 opencv-python = ">=4.5.5,<5.0.0"
 scikit-image = ">=0.19.2,<0.20.0"
 tensorflow = {version = ">=2.0,<3.0", markers = "platform_machine == \"x86_64\""}
-tensorflow-macos = {version = ">=2.5,<3.0", markers = "platform_machine == \"arm64\""}
+tensorflow-macos = {version = ">=2.5,<2.15.1 || >2.15.1,<3.0", markers = "platform_machine == \"arm64\""}
 torch = ">=1.4.0,<=2.1.0"
 
 [[package]]
@@ -1467,6 +1468,44 @@ packaging = ">=20.0"
 pillow = ">=6.2.0"
 pyparsing = ">=2.3.1"
 python-dateutil = ">=2.7"
+
+[[package]]
+name = "mixpanel"
+version = "4.10.1"
+description = "Official Mixpanel library for Python"
+optional = false
+python-versions = ">=2.7, !=3.4.*"
+groups = ["main"]
+markers = "python_version < \"3.10\""
+files = [
+    {file = "mixpanel-4.10.1-py2.py3-none-any.whl", hash = "sha256:a7a338b7197327e36356dbc1903086e7626db6d88367ccdd732b3f3c60d3b3ed"},
+    {file = "mixpanel-4.10.1.tar.gz", hash = "sha256:29a6b5773dd34f05cf8e249f4e1d16e7b6280d6b58894551ce9a5aad7700a115"},
+]
+
+[package.dependencies]
+requests = ">=2.4.2"
+six = ">=1.9.0"
+urllib3 = "*"
+
+[[package]]
+name = "mixpanel"
+version = "4.11.1"
+description = "Official Mixpanel library for Python"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+markers = "python_version == \"3.10\""
+files = [
+    {file = "mixpanel-4.11.1-py3-none-any.whl", hash = "sha256:130633fb7d65f1fea10a9b6a6d3b8239121f2039ff2280ceb97cb9a73a711f29"},
+    {file = "mixpanel-4.11.1.tar.gz", hash = "sha256:96440d36c30ce9a845141302b6249ac1c6dccc097ce20d480100c6a1041ce78e"},
+]
+
+[package.dependencies]
+requests = ">=2.4.2,<3"
+
+[package.extras]
+dev = ["build", "ghp-import", "sphinx", "tox (>=4.28.4)", "twine"]
+test = ["pytest (>=8.4.1)", "responses (>=0.25.8)"]
 
 [[package]]
 name = "mpmath"
