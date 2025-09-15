@@ -37,7 +37,7 @@ def check_custom_integration(idx, subset):
     # model_path = 'model/albert.h5'
     # albert = tf.keras.models.load_model(os.path.join(dir_path, model_path))
     plot_vis = True
-    input_keys = ['input_ids', 'token_type_ids', 'attention_mask', 'offset_mapping']
+    input_keys = ['input_ids', 'token_type_ids', 'attention_mask']
     inputs = []
     for key in input_keys:
         concat = get_input_func(key)(idx, subset)
