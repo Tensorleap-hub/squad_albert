@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.8, <3.11"
-code-loader = "^1.0.79"
+code-loader = "^1.0.138"
 readability = "0.3.1"
 transformers = "4.29.2"
 textstat = "^0.7.5"
