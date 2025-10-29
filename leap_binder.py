@@ -1,9 +1,7 @@
 from functools import lru_cache
-
 import tensorflow as tf
 import numpy as np
 import readability
-
 # Tensorleap imports
 from code_loader import leap_binder
 from code_loader.contract.datasetclasses import PreprocessResponse
@@ -11,18 +9,15 @@ from code_loader.contract.enums import LeapDataType
 from code_loader.contract.visualizer_classes import LeapText, LeapTextMask
 from code_loader.inner_leap_binder.leapbinder_decorators import tensorleap_input_encoder, tensorleap_gt_encoder, \
     tensorleap_metadata, tensorleap_preprocess, tensorleap_unlabeled_preprocess, tensorleap_custom_visualizer
-
 from transformers import AlbertTokenizerFast
 from typing import List, Dict, Union
-
 from squad_albert.config import CONFIG
 from squad_albert.data.preprocess import load_data
 from squad_albert.decoders import get_decoded_tokens, tokenizer_decoder, context_polarity, context_subjectivity, \
     answer_decoder, tokens_decoder, tokens_question_decoder, tokens_context_decoder, segmented_tokens_decoder
 from squad_albert.encoders import gt_index_encoder, gt_end_index_encoder, gt_start_index_encoder
-from squad_albert.loss import CE_loss
-from squad_albert.metrics import get_start_end_arrays, exact_match_metric, dict_metrics, CE_start_index, CE_end_index
-from squad_albert.utils.utils import get_context_positions, get_readibility_score
+from squad_albert.metrics import get_start_end_arrays
+from squad_albert.utils.utils import get_context_positions
 
 
 # -------------------------load_data--------------------------------
@@ -198,17 +193,6 @@ def metadata_context_subjectivity(idx: int, preprocess: PreprocessResponse) -> f
     text = preprocess.data['ds'][idx]['context']
     val = context_subjectivity(text)
     return val
-
-#
-# def get_analyzer(idx: int, preprocess: PreprocessResponse, section='context') -> Readability:
-#     idx = convert_index(idx, preprocess)
-#     text: str = preprocess.data['ds'][idx][section]
-#     try:
-#         analyzer = Readability(text)
-#     except:
-#         analyzer = None
-#     return analyzer
-
 
 def calc_txt_statistics(idx: int, subset: PreprocessResponse, section='context') -> float:
     # idx = convert_index(idx, subset)

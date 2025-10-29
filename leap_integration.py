@@ -2,17 +2,13 @@ import os
 import tensorflow as tf
 import numpy as np
 from code_loader.contract.datasetclasses import PredictionTypeHandler
-from code_loader.plot_functions.visualize import visualize
 from leap_binder import preprocess_response, get_input_func, gt_index_encoder_leap, metadata_is_truncated, \
-    metadata_length, metadata_dict, calc_txt_statistics, tokens_decoder_leap, \
+    metadata_length, metadata_dict, tokens_decoder_leap, \
     tokens_question_decoder_leap, tokens_context_decoder_leap, segmented_tokens_decoder_leap, \
-    answer_decoder_leap  # , get_analyzer
+    answer_decoder_leap
 from squad_albert.loss import CE_loss
 from squad_albert.metrics import exact_match_metric, dict_metrics, CE_start_index, CE_end_index
-from squad_albert.utils.utils import get_readibility_score
-
-from leap_binder import leap_binder
-from code_loader.inner_leap_binder.leapbinder_decorators import tensorleap_load_model, integration_test
+from code_loader.inner_leap_binder.leapbinder_decorators import tensorleap_load_model, tensorleap_integration_test
 from code_loader.plot_functions.visualize import visualize
 
 prediction_type1 = PredictionTypeHandler('classes', ["start", "end"])
@@ -20,24 +16,14 @@ prediction_type1 = PredictionTypeHandler('classes', ["start", "end"])
 @tensorleap_load_model([prediction_type1])
 def load_model():
     dir_path = os.path.dirname(os.path.abspath(__file__))
-    model_path = 'model/albert.h5'
+    model_path = 'model/albert_converted.h5'
     cnn = tf.keras.models.load_model(os.path.join(dir_path, model_path))
     return cnn
 
-@integration_test()
+@tensorleap_integration_test()
 def check_custom_integration(idx, subset):
-    # check_generic = True
-    # plot_vis = False
-    #
-    # if check_generic:
-    #     leap_binder.check()
-    #
-    # print("started custom tests")
-    # dir_path = os.path.dirname(os.path.abspath(__file__))
-    # model_path = 'model/albert.h5'
-    # albert = tf.keras.models.load_model(os.path.join(dir_path, model_path))
     plot_vis = True
-    input_keys = ['input_ids', 'token_type_ids', 'attention_mask', 'offset_mapping']
+    input_keys = ['input_ids', 'token_type_ids', 'attention_mask']
     inputs = []
     for key in input_keys:
         concat = get_input_func(key)(idx, subset)
