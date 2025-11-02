@@ -1,6 +1,7 @@
 from typing import List, Dict
 import tensorflow as tf
 import numpy as np
+from code_loader.inner_leap_binder.leapbinder_decorators import tensorleap_custom_metric
 
 
 def get_start_end_arrays(array: np.ndarray) -> List[int]:
@@ -16,7 +17,7 @@ def get_start_end_arrays(array: np.ndarray) -> List[int]:
     end_arr = array[..., 1]
     return start_arr, end_arr
 
-
+@tensorleap_custom_metric('exact_match_metric')
 def exact_match_metric(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:  # return batch
     """
     Description: checks if the prediction is identical for the gt and prediction
@@ -43,7 +44,7 @@ def get_nonnegative_tensor(tensor: tf.Tensor) -> tf.Tensor:
     """
     return tf.where(tensor > 0, tensor, tf.zeros_like(tensor))
 
-
+@tensorleap_custom_metric('metric')
 def dict_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> Dict[str, np.ndarray]:  # return batch
     """
     Description: Computes the IOU and F1 metric (2*precision*recall)/(precision + recall)
@@ -84,7 +85,7 @@ def dict_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> Dict[str, np.ndarray
 
     return res
 
-
+@tensorleap_custom_metric('CE_start_index')
 def CE_start_index(ground_truth: np.ndarray, prediction: np.ndarray) -> np.ndarray:
     """
     Description: Computes the Categorical Cross-Entropy loss for the start index predictions.
@@ -101,7 +102,7 @@ def CE_start_index(ground_truth: np.ndarray, prediction: np.ndarray) -> np.ndarr
     start_pred, end_pred = get_start_end_arrays(prediction)
     return (loss(start_gt, start_pred)).numpy()
 
-
+@tensorleap_custom_metric('CE_end_index')
 def CE_end_index(ground_truth: np.ndarray, prediction: np.ndarray) -> np.ndarray:
     """
     Description: Computes the Categorical Cross-Entropy loss for the end index predictions.

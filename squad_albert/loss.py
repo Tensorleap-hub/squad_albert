@@ -1,8 +1,10 @@
 import tensorflow as tf
 import numpy as np
+from code_loader.inner_leap_binder.leapbinder_decorators import tensorleap_custom_loss
+
 from squad_albert.metrics import get_start_end_arrays
 
-
+@tensorleap_custom_loss('qa_cross_entropy')
 def CE_loss(ground_truth: np.ndarray, prediction: np.ndarray) -> np.ndarray:
     """
     Description: Computes the combined Categorical Cross-Entropy loss for start and end index predictions.

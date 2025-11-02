@@ -1,7 +1,7 @@
-codeIntegrationId: 686f58cac9a4978a6b2efd3b
-projectId: 686f58c6c9a4978a6b2efd35
+codeIntegrationId: 68c6a849a3673fbedd40ac2a
+projectId: 68c6c6eba3673fbedd40ac3b
 secretId: ""
-entryFile: leap_binder.py
+entryFile: leap_integration.py
 include:
     - leap_binder.py
     - squad_albert/data/preprocess.py
@@ -12,5 +12,7 @@ include:
     - squad_albert/loss.py
     - squad_albert/metrics.py
     - squad_albert/project_config.yaml
+    - squad_albert/project_config.yaml
+    - leap_integration.py
     - requirements.txt
 pythonVersion: py38

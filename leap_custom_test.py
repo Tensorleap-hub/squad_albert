@@ -16,7 +16,7 @@ from leap_binder import leap_binder
 
 def check_custom_integration():
     check_generic = True
-    plot_vis = False
+    plot_vis = True
 
     if check_generic:
         leap_binder.check()
@@ -31,12 +31,12 @@ def check_custom_integration():
         input_keys = ['input_ids', 'token_type_ids', 'attention_mask', 'offset_mapping']
         inputs = []
         for key in input_keys:
-            concat = np.expand_dims(get_input_func(key)(idx, x[0]), axis=0)
+            concat = get_input_func(key)(idx, x[0])
             inputs.append(concat)
 
         metadata_dict_all = metadata_dict(idx, x[0])
         y_pred = albert([inputs]).numpy()
-        y_true = np.expand_dims(gt_index_encoder_leap(idx, x[0]), axis=0)
+        y_true = gt_index_encoder_leap(idx, x[0])
 
         #metrics
         f1 = dict_metrics(y_true, y_pred)
