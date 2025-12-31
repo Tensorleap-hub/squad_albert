@@ -11,7 +11,7 @@ from squad_albert.metrics import exact_match_metric, dict_metrics, CE_start_inde
 from code_loader.inner_leap_binder.leapbinder_decorators import tensorleap_load_model, tensorleap_integration_test
 from code_loader.plot_functions.visualize import visualize
 
-prediction_type1 = PredictionTypeHandler('classes', ["start", "end"],channel_dim=-1)
+prediction_type1 = PredictionTypeHandler('classes', ["start", "end"], channel_dim=-1)
 
 @tensorleap_load_model([prediction_type1])
 def load_model():
