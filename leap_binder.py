@@ -61,7 +61,7 @@ def get_inputs(idx: int, preprocess: PreprocessResponse) -> dict:
 
 @lru_cache()
 def get_input_func(key: str):
-    @tensorleap_input_encoder(key, channel_dim = -1)
+    @tensorleap_input_encoder(key, channel_dim=-1)
     def input_func(idx: int, preprocess: PreprocessResponse):
         idx = convert_index(idx, preprocess)
         x = get_inputs(idx, preprocess)[key].numpy()
