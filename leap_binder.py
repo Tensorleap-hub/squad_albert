@@ -5,7 +5,7 @@ import readability
 # Tensorleap imports
 from code_loader import leap_binder
 from code_loader.contract.datasetclasses import PreprocessResponse
-from code_loader.contract.enums import LeapDataType
+from code_loader.contract.enums import LeapDataType, DataStateType
 from code_loader.contract.visualizer_classes import LeapText, LeapTextMask
 from code_loader.inner_leap_binder.leapbinder_decorators import tensorleap_input_encoder, tensorleap_gt_encoder, \
     tensorleap_metadata, tensorleap_preprocess, tensorleap_unlabeled_preprocess, tensorleap_custom_visualizer
@@ -24,8 +24,8 @@ from squad_albert.utils.utils import get_context_positions
 @tensorleap_preprocess()
 def preprocess_response() -> List[PreprocessResponse]:
     train_idx, train_ds, val_idx, val_ds, _, _, enums_dic = load_data()
-    train = PreprocessResponse(length=len(train_idx), data={'ds': train_ds, 'idx': train_idx, **enums_dic})
-    test = PreprocessResponse(length=len(val_idx), data={'ds': val_ds, 'idx': val_idx, **enums_dic})
+    train = PreprocessResponse(length=len(train_idx), data={'ds': train_ds, 'idx': train_idx, **enums_dic}, state=DataStateType.training)
+    test = PreprocessResponse(length=len(val_idx), data={'ds': val_ds, 'idx': val_idx, **enums_dic}, state=DataStateType.validation)
     tokenizer = AlbertTokenizerFast.from_pretrained("vumichien/albert-base-v2-squad2")
     leap_binder.cache_container["tokenizer"] = tokenizer
     return [train, test]
@@ -33,7 +33,7 @@ def preprocess_response() -> List[PreprocessResponse]:
 @tensorleap_unlabeled_preprocess()
 def preprocess_response_unlabeled() -> List[PreprocessResponse]:
     _, _, _, _, test_idx, test_ds, enums_dic = load_data()
-    test = PreprocessResponse(length=len(test_idx), data={'ds': test_ds, 'idx': test_idx, **enums_dic})
+    test = PreprocessResponse(length=len(test_idx), data={'ds': test_ds, 'idx': test_idx, **enums_dic}, state=DataStateType.test)
     return test
 
 
@@ -61,7 +61,7 @@ def get_inputs(idx: int, preprocess: PreprocessResponse) -> dict:
 
 @lru_cache()
 def get_input_func(key: str):
-    @tensorleap_input_encoder(key)
+    @tensorleap_input_encoder(key, channel_dim=-1)
     def input_func(idx: int, preprocess: PreprocessResponse):
         idx = convert_index(idx, preprocess)
         x = get_inputs(idx, preprocess)[key].numpy()

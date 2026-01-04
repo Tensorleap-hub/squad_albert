@@ -353,13 +353,13 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
 name = "code-loader"
-version = "1.0.143"
+version = "1.0.152"
 description = ""
 optional = false
 python-versions = "<3.13,>=3.8"
 files = [
-    {file = "code_loader-1.0.143-py3-none-any.whl", hash = "sha256:b91743ddf3babf921a8c87488c3e948e11e647f6f3d92fec42b23eb65214b4c2"},
-    {file = "code_loader-1.0.143.tar.gz", hash = "sha256:296774c05950d381d78b2567dd2dcae7e513d5d43a25715a1f58dce484e6333e"},
+    {file = "code_loader-1.0.152-py3-none-any.whl", hash = "sha256:4a25723560f23c2ca2ccdc4295985549e2129c68f1b4e6694ba7fc03a3736973"},
+    {file = "code_loader-1.0.152.tar.gz", hash = "sha256:c404957e7c0c64872697de59201593440933b4edffc15608cbd77a3dfb07458b"},
 ]
 
 [package.dependencies]
@@ -3615,4 +3615,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8, <3.11"
-content-hash = "b906966df7586bfb5d5e9fce5b88bf0d94af33f3c98127bc7187ccd5ba6115d0"
+content-hash = "841dc560a0bd5fb9e9f2a377d4a1a109c84f4d0acda39c1c921cce8ccec73819"
